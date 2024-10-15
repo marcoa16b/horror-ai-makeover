@@ -1,0 +1,158 @@
+---
+import ImageTransform from '../../components/ImageTransform';
+import Layout from '../../layouts/Layout.astro';
+import { getCldImageUrl } from 'astro-cloudinary/helpers';
+import Header from '../../components/Header';
+
+const { searchParams } = Astro.url;
+const id = searchParams.get('id');
+
+if (id == null) return Astro.redirect('/');
+
+const url = getCldImageUrl({
+    src: id || '',
+});
+---
+
+<Layout title="Image">
+    <main
+        data-id={id}
+        data-description=""
+        data-new-url=""
+        class="flex flex-col items-center py-10"
+    >
+        <!-- <Header client:load /> -->
+        <ImageTransform
+            id={id}
+            url={url}
+            className="w-full px-5 sm:px-10 md:px-14"
+            client:load
+        />
+    </main>
+</Layout>
+
+<script>
+    // import { getCldImageUrl } from 'astro-cloudinary/helpers';
+    // import { generateDescription } from '../../utils/gemini';
+    // import { createHorrorGeneration } from '../../utils/appwrite';
+    // // import 'two-up-element';
+
+    // const prompt =
+    //     'Generate a short description of Halloween themed makeup that is spooky and scary';
+
+    // const id = document.querySelector('main')?.getAttribute('data-id') || '';
+
+    // const main = document.querySelector('main') as HTMLElement;
+
+    // const transformed = document.querySelector(
+    //     '#transformed'
+    // ) as HTMLImageElement;
+
+    // const loading = document.querySelector('#loading') as HTMLDivElement;
+
+    // const buttonDiscover = document.querySelector('#button-discover');
+    // const buttonShare = document.querySelector('#share');
+
+    // const descriptionSpan = document.querySelector(
+    //     '#description'
+    // ) as HTMLSpanElement;
+
+    // buttonDiscover?.addEventListener('click', async () => {
+    //     loading.classList.replace('hidden', 'flex');
+
+    //     const result = await generateDescription(prompt);
+    //     main.setAttribute('data-description', result);
+
+    //     console.log('Prompt result: ' + result);
+
+    //     descriptionSpan.textContent = result;
+
+    //     const newPrompt = result.replaceAll(',', '');
+
+    //     try {
+    //         const newUrl = getCldImageUrl({
+    //             src: id,
+    //             replace: {
+    //                 from: 'subject makeup',
+    //                 to: newPrompt,
+    //                 preserveGeometry: true,
+    //             },
+    //             replaceBackground: `Creepy and spooky background related to the person's makeup: ${result}`,
+    //             brightness: '50',
+    //             autoContrast: true,
+    //         });
+
+    //         console.log('New URL: ', newUrl);
+
+    //         main.setAttribute('data-new-url', newUrl);
+
+    //         transformed.src = newUrl;
+    //         transformed.onload = () => {
+    //             loading.classList.replace('flex', 'hidden');
+    //         };
+    //     } catch (error) {
+    //         alert('Error al generar la imagen: ' + error);
+    //         loading.classList.replace('flex', 'hidden');
+    //     }
+    // });
+
+    // buttonShare?.addEventListener('click', async () => {
+    //     try {
+    //         const desc = main.getAttribute('data-description') || '';
+    //         const url = main.getAttribute('data-new-url') || '';
+    //         console.log('Description: ', desc);
+    //         createHorrorGeneration(desc, url, id).then((data) => {
+    //             console.log('Saved generation: ', data);
+    //         });
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // });
+</script>
+
+<style>
+    /* .lds-facebook {
+        color: #1c4c5b;
+    }
+    .lds-facebook,
+    .lds-facebook div {
+        box-sizing: border-box;
+    }
+    .lds-facebook {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+    .lds-facebook div {
+        display: inline-block;
+        position: absolute;
+        left: 8px;
+        width: 16px;
+        background: currentColor;
+        animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+    }
+    .lds-facebook div:nth-child(1) {
+        left: 8px;
+        animation-delay: -0.24s;
+    }
+    .lds-facebook div:nth-child(2) {
+        left: 32px;
+        animation-delay: -0.12s;
+    }
+    .lds-facebook div:nth-child(3) {
+        left: 56px;
+        animation-delay: 0s;
+    }
+    @keyframes lds-facebook {
+        0% {
+            top: 8px;
+            height: 64px;
+        }
+        50%,
+        100% {
+            top: 24px;
+            height: 32px;
+        }
+    } */
+</style>
