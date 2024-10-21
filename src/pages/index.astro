@@ -1,123 +1,98 @@
 ---
-import Gallery from '../components/Gallery';
 import Layout from '../layouts/Layout.astro';
-import { CldUploadWidget, CldImage } from 'astro-cloudinary';
-// import { getCollection } from 'astro:content';
-
-// const images = await getCollection('images');
-// console.log('images: ', images);
+import { AuroraBackground } from '../../@/components/ui/aurora-background';
+import { HoverBorderGradient } from '../../@/components/ui/hover-border-gradient';
+import { motion } from 'framer-motion';
+import LoginModal from '../components/home/LoginModal';
+import { CldUploadWidget } from 'astro-cloudinary';
 ---
 
-<Layout title="Welcome to Astro.">
-    <main class="flex flex-col items-center py-20">
-        <div>
-            <h1 class="text-3xl font-bold mb-5">Horror Makeover 👻</h1>
-        </div>
+<Layout title="Home page">
+    <main>
+        <LoginModal client:load />
 
-        <div
-            class="w-full px-5 sm:px-10 md:px-14 flex flex-col gap-5 sm:flex-row items-center justify-between"
-        >
-            <p
-                class="sm:text-lg text-center sm:text-left sm:w-[80%] md:w-[60%]"
+        <div class="relative w-full h-[100dvh]">
+            <AuroraBackground
+                client:load
+                className="w-full h-full flex flex-col items-center justify-center"
             >
-                Descubre el maquillaje perfecto para halloween o genera uno
-                tematico con IA.
-            </p>
-            <CldUploadWidget
-                id="upload-events"
-                uploadPreset="nandev-hackathon"
-                options={{
-                    sources: ['local', 'camera'],
-                    multiple: false,
-                    maxFiles: 1,
-                    language: 'es',
-                    text: {
-                        es: {
-                            or: 'o',
-                            menu: {
-                                files: 'Subir archivo',
-                                camera: 'Tomar foto',
-                            },
-                            local: {
-                                browse: 'Seleccionar',
-                                dd_title_single:
-                                    'Arrastra y suelta un archivo aquí',
-                            },
-                            camera: {
-                                dd_title_single: 'Toma una foto',
-                            },
-                        },
-                    },
-                }}
-            >
-                <button
-                    class="group inline-block rounded bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 p-[2px] text-white focus:outline-none focus:ring active:text-opacity-75"
+                <motion.div
+                    initial={{ opacity: 0.0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{
+                        delay: 0.3,
+                        duration: 0.8,
+                        ease: 'easeInOut',
+                    }}
+                    client:load
+                    className="relative flex flex-col gap-4 items-center justify-center px-5 sm:px-10 md:px-14"
                 >
-                    <span
-                        class="block text-nowrap rounded-sm bg-[#13151a] px-8 py-3 text-sm font-medium group-hover:bg-transparent"
+                    <div
+                        class="text-3xl md:text-7xl font-bold dark:text-white text-center"
                     >
-                        Subir foto
-                    </span>
-                </button>
-            </CldUploadWidget>
-        </div>
+                        Crea transformaciones espeluznantes a tus selfies.
+                    </div>
+                    <div
+                        class="font-extralight text-base sm:text-lg md:text-2xl dark:text-neutral-200 text-center py-4"
+                    >
+                        Transforma tu fotografía y crea ideas para tu próximo
+                        disfraz.
+                    </div>
 
-        <section class="px-5 sm:px-10 md:px-14">
-            <h2 class="text-2xl font-bold mt-10 mb-5">Últimas subidas</h2>
-            <Gallery client:load />
-            <ul
-                id="images-container"
-                class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 align-center gap-5"
-            >
-                <!-- {
-                    images.map((img: any) => (
-                        <li>
-                            <CldImage
-                                class="rounded-lg image-events"
-                                src={img.data.public_id}
-                                width={300}
-                                height={300}
-                                crop={{
-                                    type: 'fill',
-                                    source: true,
-                                }}
-                            />
-                        </li>
-                    ))
-                } -->
-            </ul>
-        </section>
+                    <CldUploadWidget
+                        id="upload-events"
+                        uploadPreset="nandev-hackathon"
+                        options={{
+                            sources: ['local'],
+                            multiple: false,
+                            maxFiles: 1,
+                            language: 'es',
+                            maxFileSize: 1500000,
+                            text: {
+                                es: {
+                                    or: 'o',
+                                    menu: {
+                                        files: 'Subir archivo',
+                                        camera: 'Tomar foto',
+                                    },
+                                    local: {
+                                        browse: 'Seleccionar',
+                                        dd_title_single:
+                                            'Arrastra y suelta un archivo aquí. Debe ser una imagen de menos de 1.5MB.',
+                                    },
+                                    camera: {
+                                        dd_title_single: 'Toma una foto',
+                                    },
+                                },
+                            },
+                        }}
+                    >
+                        <HoverBorderGradient
+                            containerClassName="rounded-full"
+                            as="button"
+                            client:load
+                            className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-2"
+                        >
+                            <span class="md:text-xl">Subir foto</span>
+                        </HoverBorderGradient>
+                    </CldUploadWidget>
+                </motion.div>
+            </AuroraBackground>
+        </div>
     </main>
 </Layout>
 
-<style></style>
-
 <script>
     import { navigate } from 'astro:transitions/client';
-    import { cldAssetsLoader } from 'astro-cloudinary/loaders';
 
     const widget = document.querySelector('#upload-events');
-
-    const imagesContainer = document.querySelector('#images-container');
-
-    const listImages = document.querySelectorAll('.image-events');
-
     if (widget) {
         widget.addEventListener('clduploadwidget:success', ((
             e: CustomEvent<{ info: { public_id: string } }>
         ) => {
             const publicId = e.detail.info.public_id;
-            //console.log(publicId);
-            navigate(`/img?id=${publicId}`);
+
+            navigate(`/transform/${publicId}`);
         }) as EventListener);
     }
-
-    listImages.forEach((img) => {
-        img.addEventListener('cldimage:error', ((
-            e: CustomEvent<{ detail: {} }>
-        ) => {
-            //console.log('cldimage:error', e.detail);
-            img.classList.add('hidden');
-        }) as EventListener);
-    });
 </script>

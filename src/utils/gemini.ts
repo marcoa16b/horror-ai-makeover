@@ -15,7 +15,7 @@ export const generateDescription = async (prompt: string): Promise<string> => {
         systemInstruction: systemPrompt,
         generationConfig: {
             temperature: 0.7, // Higher temperature means the model will take more risks
-            maxOutputTokens: 100,
+            maxOutputTokens: 250,
         },
     });
 

@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import {
     GetCurrentUser,
     LoginUser,
-    LogoutUser,
+    LogOutUser,
     RegisterUser,
 } from '../utils/auth';
 import type { Models } from 'appwrite';
@@ -116,7 +116,7 @@ function Header() {
     const HandleLogOut = () => {
         console.log('Cerrando sesión');
         // Cerrar sesión
-        LogoutUser()
+        LogOutUser()
             .then(() => {
                 console.log('Sesión cerrada');
                 alert('¡Sesión cerrada con éxito!');

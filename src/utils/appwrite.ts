@@ -14,11 +14,12 @@ const HORRORGENERATIONCOLLECTION = '6709f7ac00290b7362c6';
  * Horror object
  *
  * @param id Horror ID in the database
- * @param publicId Horror public ID of cloudinary
+ * @param publicIds Horror public IDs of cloudinary
  */
 export interface Horror {
     id: string | null;
-    publicId: string;
+    user: string;
+    publicIds: string[];
 }
 
 /**
@@ -46,7 +47,8 @@ export const getAllHorror = async (): Promise<Horror[]> => {
 
     const listHorrors = response.documents.map((doc) => ({
         id: doc.$id,
-        publicId: doc.publicId,
+        user: doc.user,
+        publicIds: doc.public_ids,
     }));
 
     return listHorrors;
@@ -68,7 +70,8 @@ export const getHorror = async (id: string): Promise<Horror> => {
     }
     return {
         id: doc.$id,
-        publicId: doc.publicId,
+        user: doc.user,
+        publicIds: doc.public_ids,
     };
 };
 
@@ -84,14 +87,26 @@ export const createHorror = async (horror: Horror): Promise<Horror> => {
         HORRORCOLLECTION,
         ID.unique(),
         {
-            publicId: horror.publicId,
+            publicId: horror.publicIds,
         }
     );
 
     return {
         id: response.$id,
-        publicId: response.publicId,
+        user: response.user,
+        publicIds: response.public_ids,
     };
+};
+
+export const updateHorror = async (horror: Horror): Promise<Horror> => {
+    if (!horror.id) {
+        throw new Error('Horror ID is required');
+    }
+    await db.updateDocument(DATABASEID, HORRORCOLLECTION, horror.id, {
+        publicId: horror.publicIds,
+    });
+
+    return horror;
 };
 
 // TODO: Implement the following function
@@ -100,83 +115,83 @@ const deleteHorror = async (id: string): Promise<void> => {
     throw new Error('Not implemented');
 };
 
-export const getAllHorrorGenerations = async (): Promise<
-    HorrorGeneration[]
-> => {
-    const response = await db.listDocuments(
-        DATABASEID,
-        HORRORGENERATIONCOLLECTION
-    );
+// export const getAllHorrorGenerations = async (): Promise<
+//     HorrorGeneration[]
+// > => {
+//     const response = await db.listDocuments(
+//         DATABASEID,
+//         HORRORGENERATIONCOLLECTION
+//     );
 
-    const listHorrorGenerations = response.documents.map((doc) => ({
-        id: doc.$id,
-        description: doc.description,
-        url: doc.url,
-        horror: {
-            id: doc.horror.$id,
-            publicId: doc.horror.publicId,
-        },
-    }));
+//     const listHorrorGenerations = response.documents.map((doc) => ({
+//         id: doc.$id,
+//         description: doc.description,
+//         url: doc.url,
+//         horror: {
+//             id: doc.horror.$id,
+//             publicId: doc.horror.publicId,
+//         },
+//     }));
 
-    return listHorrorGenerations;
-};
+//     return listHorrorGenerations;
+// };
 
-/**
- * Get a horror generation by ID
- *
- * @param id Horror generation ID
- * @returns Horror generation
- * @throws Error if horror generation not found
- */
-export const getHorrorGeneration = async (
-    id: string
-): Promise<HorrorGeneration> => {
-    const allHorrorGenerations = await getAllHorrorGenerations();
+// /**
+//  * Get a horror generation by ID
+//  *
+//  * @param id Horror generation ID
+//  * @returns Horror generation
+//  * @throws Error if horror generation not found
+//  */
+// export const getHorrorGeneration = async (
+//     id: string
+// ): Promise<HorrorGeneration> => {
+//     const allHorrorGenerations = await getAllHorrorGenerations();
 
-    const horrorGeneration = allHorrorGenerations.find(
-        (horrorGeneration) => horrorGeneration.id === id
-    );
+//     const horrorGeneration = allHorrorGenerations.find(
+//         (horrorGeneration) => horrorGeneration.id === id
+//     );
 
-    if (!horrorGeneration) {
-        throw new Error('Horror generation not found');
-    }
+//     if (!horrorGeneration) {
+//         throw new Error('Horror generation not found');
+//     }
 
-    return horrorGeneration;
-};
+//     return horrorGeneration;
+// };
 
-/**
- * Create a horror generation
- *
- * @param description Description of the makeup generated
- * @param url URL of the final image with the makeup
- * @param originalID ID of the original makeup
- * @returns Horror generation
- */
-export const createHorrorGeneration = async (
-    description: string,
-    url: string,
-    originalID: string
-): Promise<HorrorGeneration> => {
-    const horror = await getHorror(originalID);
+// /**
+//  * Create a horror generation
+//  *
+//  * @param description Description of the makeup generated
+//  * @param url URL of the final image with the makeup
+//  * @param originalID ID of the original makeup
+//  * @returns Horror generation
+//  */
+// export const createHorrorGeneration = async (
+//     description: string,
+//     url: string,
+//     originalID: string
+// ): Promise<HorrorGeneration> => {
+//     const horror = await getHorror(originalID);
 
-    const response = await db.createDocument(
-        DATABASEID,
-        HORRORGENERATIONCOLLECTION,
-        ID.unique(),
-        {
-            description: description,
-            url: url,
-            horror: horror.id,
-        }
-    );
+//     const response = await db.createDocument(
+//         DATABASEID,
+//         HORRORGENERATIONCOLLECTION,
+//         ID.unique(),
+//         {
+//             description: description,
+//             url: url,
+//             horror: horror.id,
+//         }
+//     );
 
-    return {
-        id: response.$id,
-        description: response.description,
-        url: response.url,
-        horror: {
-            id: response.horror.$id,
-            publicId: response.horror.publicId,
-        },
-    };
-};
+//     return {
+//         id: response.$id,
+//         description: response.description,
+//         url: response.url,
+//         horror: {
+//             id: response.horror.$id,
+//             publicId: response.horror.publicId,
+//         },
+//     };
+// };

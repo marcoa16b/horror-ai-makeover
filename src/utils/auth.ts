@@ -39,7 +39,7 @@ export const LoginUser = async (
     }
 };
 
-export const LogoutUser = async (): Promise<void> => {
+export const LogOutUser = async (): Promise<void> => {
     try {
         await account.deleteSession('current');
     } catch (error) {
@@ -58,7 +58,9 @@ export const GetCurrentUser = async (): Promise<
             res = response;
         })
         .catch((error: AppwriteException) => {
-            throw new Error('Error getting current user: ' + error.message);
+            console.log('Error getting current user: ' + error.message);
+            return;
+            // throw new Error('Error getting current user: ' + error.message);
         });
 
     return res;

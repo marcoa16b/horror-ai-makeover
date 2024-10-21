@@ -5,6 +5,7 @@ const images = defineCollection({
     loader: cldAssetsLoader({
         limit: 10,
         folder: 'hackathon',
+        deliveryType: 'upload',
     }),
 });
 
